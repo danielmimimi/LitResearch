@@ -28,6 +28,7 @@ share/python-wheels/
 MANIFEST
 
 # avoid publishing results
+dok/
 results/
 *.html
 
