@@ -1,8 +1,10 @@
 from typing import List
-from searcher.ArxivSearcher import ArxivSearcher
+
 
 from searcher.BaseSearcher import BaseSearcher
 from searcher.GoogleScholarSearcher import GoogleScholarSearcher
+from searcher.WebOfScienceSearcher import WebOfScienceSearcher
+from searcher.ArxivSearcher import ArxivSearcher
 
 
 class SearcherFactory(object):
@@ -16,4 +18,7 @@ class SearcherFactory(object):
                 self.searchers.append(ArxivSearcher(self.configuration))
             if "Scholar" in searcherString:
                 self.searchers.append(GoogleScholarSearcher(self.configuration))
+            if "WOS" in searcherString:
+                self.searchers.append(WebOfScienceSearcher(self.configuration))
+
         return self.searchers

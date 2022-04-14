@@ -56,12 +56,15 @@ class GoogleScholarSearcher(BaseSearcher):
 
             backgroundColorTc = "#c6f2b3"
             headerList = [
+                HtmlTableElement(text="Index", bgColor=backgroundColorTc),
                 HtmlTableElement(text="Title", bgColor=backgroundColorTc),
                 HtmlTableElement(text="Summary", bgColor=backgroundColorTc),
                 HtmlTableElement(text="Download", bgColor=backgroundColorTc),
             ]
             entryList = []
+            indexCount = 0
             for literature in self.foundLiteratures:
+                entryList.append(HtmlTableElement(text=str(indexCount)))
                 entryList.append(HtmlTableElement(text=literature.get_title()))
                 entryList.append(HtmlTableElement(text=literature.get_summary()))
                 if literature.get_download_link() is not "":
@@ -72,6 +75,7 @@ class GoogleScholarSearcher(BaseSearcher):
                     )
                 else:
                     entryList.append(HtmlTableElement(text="Download"))
+                indexCount = indexCount + 1
             helper.createHtmlTable(headerList, entryList)
 
         final_path = path + "_" + search_name + ".html"

@@ -1,5 +1,5 @@
 {
-    "Title": "Road to Phd",
+    "Title": "Literature Research",
     "Search": [
         {
             "Name": "First",
@@ -45,7 +45,8 @@
                 "Citations": 10
             },
             "Searcher": [
-                "Arxiv"
+                "Arxiv",
+                "Scholar"
             ]
         }
     ]

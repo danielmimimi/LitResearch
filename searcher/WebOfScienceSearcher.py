@@ -1,7 +1,9 @@
 import os
 from typing import List
-import arxiv
 import dominate
+import woslite_client
+from woslite_client.rest import ApiException
+from pprint import pprint
 from dominate.tags import link, body, div, li, a, h1, br, p, h2, h3, hr
 from DominateHelper import DominateHelper
 from HtmlTableElement import HtmlTableElement
@@ -11,32 +13,43 @@ from model.BaseLiterature import BaseLiterature
 from searcher.BaseSearcher import BaseSearcher
 
 
-class ArxivSearcher(BaseSearcher):
+class WebOfScienceSearcher(BaseSearcher):
     def __init__(self, configuration):
         super().__init__(configuration)
         self.foundLiteratures = []
-        self.searcher_source = "Arxiv"
+        self.searcher_source = "Web of Science"
+        configuration = woslite_client.Configuration()
+        configuration.api_key["X-ApiKey"] = "YOUR_API_KEY"
+        self.integration_api_instance = woslite_client.IntegrationApi(
+            woslite_client.ApiClient(configuration)
+        )
+        self.search_api_instance = woslite_client.SearchApi(
+            woslite_client.ApiClient(configuration)
+        )
 
     def get_searcher_name(self) -> str:
         return self.searcher_source
 
     def search(self):
         self.search_string = self.__prepareSearch(self.configuration["Keywords"])
-        search = arxiv.Search(
-            query=self.search_string,
-            max_results=float("inf"),
-            sort_by=arxiv.SortCriterion.Relevance,
-            sort_order=arxiv.SortOrder.Descending,
-        )
-        for foundLiterature in list(search.results()):
-            typed_paper = ArxivLiterature(foundLiterature.title)
-            typed_paper.set_summary(foundLiterature.summary)
-            for link in foundLiterature.links:
-                if link.title is not None:
-                    if "pdf" in link.title:
-                        typed_paper.set_download_link(link.href)
+        try:
+            # Submits a user query and returns results
+            api_response = self.search_api_instance.root_get(
+                "WOK", self.search_string, 99, 1, lang="en"
+            )
+            pprint(api_response)
+        except ApiException as e:
+            # abort
+            print("Exception when calling SearchApi->root_get: %s\n" % e)
+        # for foundLiterature in list(search.results()):
+        #     typed_paper = ArxivLiterature(foundLiterature.title)
+        #     typed_paper.set_summary(foundLiterature.summary)
+        #     for link in foundLiterature.links:
+        #         if link.title is not None:
+        #             if "pdf" in link.title:
+        #                 typed_paper.set_download_link(link.href)
 
-            self.foundLiteratures.append(typed_paper)
+        #     self.foundLiteratures.append(typed_paper)
         return self.foundLiteratures
 
     def get_amount_found(self) -> int:
@@ -54,15 +67,12 @@ class ArxivSearcher(BaseSearcher):
 
             backgroundColorTc = "#c6f2b3"
             headerList = [
-                HtmlTableElement(text="Index", bgColor=backgroundColorTc),
                 HtmlTableElement(text="Title", bgColor=backgroundColorTc),
                 HtmlTableElement(text="Summary", bgColor=backgroundColorTc),
                 HtmlTableElement(text="Download", bgColor=backgroundColorTc),
             ]
             entryList = []
-            indexCount = 0
             for literature in self.foundLiteratures:
-                entryList.append(HtmlTableElement(text=str(indexCount)))
                 entryList.append(HtmlTableElement(text=literature.get_title()))
                 entryList.append(HtmlTableElement(text=literature.get_summary()))
                 if literature.get_download_link() is not "":
@@ -73,7 +83,6 @@ class ArxivSearcher(BaseSearcher):
                     )
                 else:
                     entryList.append(HtmlTableElement(text="Download"))
-                indexCount = indexCount + 1
             helper.createHtmlTable(headerList, entryList)
 
         final_path = path + "_" + search_name + ".html"
