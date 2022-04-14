@@ -20,7 +20,8 @@
                 "Citations": 10
             },
             "Searcher": [
-                "Arxiv"
+                "Arxiv",
+                "Scholar"
             ]
         },
         {
