@@ -8,9 +8,10 @@ from dominate.tags import link, body, div, li, a, h1, br, p, h2, h3, hr
 from DominateHelper import DominateHelper
 from HtmlTableElement import HtmlTableElement
 
-from model.ArxivLiterature import ArxivLiterature
+from model.WebOfScienceLiterature import WebOfScienceLiterature
 from model.BaseLiterature import BaseLiterature
 from searcher.BaseSearcher import BaseSearcher
+from searcher.Completer import Completer
 
 
 class WebOfScienceSearcher(BaseSearcher):
@@ -19,7 +20,7 @@ class WebOfScienceSearcher(BaseSearcher):
         self.foundLiteratures = []
         self.searcher_source = "Web of Science"
         configuration = woslite_client.Configuration()
-        configuration.api_key["X-ApiKey"] = "YOUR_API_KEY"
+        configuration.api_key["X-ApiKey"] = "39933d8290434369dbd9ec8dc60d7b0d61c219e7"
         self.integration_api_instance = woslite_client.IntegrationApi(
             woslite_client.ApiClient(configuration)
         )
@@ -27,69 +28,48 @@ class WebOfScienceSearcher(BaseSearcher):
             woslite_client.ApiClient(configuration)
         )
 
+        self.completer = Completer(configuration)
+
     def get_searcher_name(self) -> str:
         return self.searcher_source
 
-    def search(self):
-        self.search_string = self.__prepareSearch(self.configuration["Keywords"])
+    def search(self, search_config):
+        self.search_string = self.__prepareSearch(search_config["Keywords"])
         try:
+            max_results = 99
+            publish_time_span = (
+                str(search_config["Filter"]["Year"]) + "-01-01+2022-12-31"
+            )
             # Submits a user query and returns results
             api_response = self.search_api_instance.root_get(
-                "WOK", self.search_string, 99, 1, lang="en"
+                "WOS", self.search_string, max_results, 1, lang="en"
             )
-            pprint(api_response)
+            for literature in api_response.data:
+                baseLiterature = self.completer.complete(literature.title.title[0])
+                if (
+                    baseLiterature.get_citations()
+                    >= search_config["Filter"]["Citations"]
+                ):
+                    self.foundLiteratures.append(baseLiterature)
         except ApiException as e:
             # abort
             print("Exception when calling SearchApi->root_get: %s\n" % e)
-        # for foundLiterature in list(search.results()):
-        #     typed_paper = ArxivLiterature(foundLiterature.title)
-        #     typed_paper.set_summary(foundLiterature.summary)
-        #     for link in foundLiterature.links:
-        #         if link.title is not None:
-        #             if "pdf" in link.title:
-        #                 typed_paper.set_download_link(link.href)
 
-        #     self.foundLiteratures.append(typed_paper)
         return self.foundLiteratures
 
     def get_amount_found(self) -> int:
         return len(self.foundLiteratures)
 
-    def create_search_summary(self, path: str, search_name: str) -> str:
-        doc = dominate.document(title="Literature Research " + search_name)
-
-        with doc.head:
-            link(rel="stylesheet", href="../utils/style.css")
-
-        with doc.add(body()).add(div(id="content")):
-            a(id=search_name)
-            helper = DominateHelper(doc)
-
-            backgroundColorTc = "#c6f2b3"
-            headerList = [
-                HtmlTableElement(text="Title", bgColor=backgroundColorTc),
-                HtmlTableElement(text="Summary", bgColor=backgroundColorTc),
-                HtmlTableElement(text="Download", bgColor=backgroundColorTc),
-            ]
-            entryList = []
-            for literature in self.foundLiteratures:
-                entryList.append(HtmlTableElement(text=literature.get_title()))
-                entryList.append(HtmlTableElement(text=literature.get_summary()))
-                if literature.get_download_link() is not "":
-                    entryList.append(
-                        HtmlTableElement(
-                            text="Download", href=literature.get_download_link()
-                        )
-                    )
-                else:
-                    entryList.append(HtmlTableElement(text="Download"))
-            helper.createHtmlTable(headerList, entryList)
-
-        final_path = path + "_" + search_name + ".html"
-        file = open(final_path, "w+")
-        file.write(doc.__str__())
-        file.close()
-        self.path_to_summary = final_path
-
     def __prepareSearch(self, listOfWords):
-        return " ".join(listOfWords)
+        configure_words = []
+        for word in listOfWords:
+            if "AND" in word:
+                configure_words.append("AND")
+            elif "NOT" in word:
+                configure_words.append("NOT")
+            elif "OR" in word:
+                configure_words.append("OR")
+            else:
+                configure_words.append("AB=(" + word + ")")
+
+        return " ".join(configure_words)

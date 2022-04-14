@@ -30,7 +30,10 @@ MANIFEST
 # avoid publishing results
 dok/
 results/
+Analysis/
 *.html
+*.zip
+*.cmd
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

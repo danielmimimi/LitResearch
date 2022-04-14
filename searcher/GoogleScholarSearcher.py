@@ -1,6 +1,5 @@
 import os
-from typing import List
-from scholarly import scholarly, ProxyGenerator
+import time
 import dominate
 from dominate.tags import link, body, div, li, a, h1, br, p, h2, h3, hr
 from DominateHelper import DominateHelper
@@ -10,6 +9,7 @@ from model.ArxivLiterature import ArxivLiterature
 from model.BaseLiterature import BaseLiterature
 from model.ScholarLiterature import ScholarLiterature
 from searcher.BaseSearcher import BaseSearcher
+from searcher.ScholarlySingleton import ScholarlySingleton
 
 
 class GoogleScholarSearcher(BaseSearcher):
@@ -17,76 +17,56 @@ class GoogleScholarSearcher(BaseSearcher):
         super().__init__(configuration)
         self.foundLiteratures = []
         self.searcher_source = "Google Scholar"
+        self.search_engine = ScholarlySingleton.getInstance()
 
     def get_searcher_name(self) -> str:
         return self.searcher_source
 
-    def search(self):
-        self.search_string = self.__prepareSearch(self.configuration["Keywords"])
-        pg = ProxyGenerator()
-        success = pg.Tor_Internal(tor_cmd="tor")
-        scholarly.use_proxy(pg)
-        pub_summary = scholarly.search_pubs(
-            self.search_string, year_low=self.configuration["Filter"]["Year"]
-        )
-
-        pub_summary._get_total_results()
-        for pub in pub_summary:
-            if pub["num_citations"] > self.configuration["Filter"]["Citations"]:
-                typed_paper = ScholarLiterature(pub["bib"]["title"])
-                typed_paper.set_summary(pub["bib"]["abstract"])
-                typed_paper.set_citations(pub["num_citations"])
-                typed_paper.set_download_link(pub["pub_url"])
-                self.foundLiteratures.append(typed_paper)
+    def search(self, search_config):
+        self.search_string = self.__prepareSearch(search_config["Keywords"])
+        try:
+            pub_summary = self.search_engine.query_with_year(
+                self.search_string, search_config["Filter"]["Year"]
+            )
+        except Exception as err:
+            print(err)
+            return self.foundLiteratures
+        full_list_of_elements = list(pub_summary)
+        if len(full_list_of_elements) == 0:
+            return self.foundLiteratures
+        try:
+            for pub in full_list_of_elements:
+                print("Evaluated : " + pub["bib"]["title"])
+                print("Citations : " + str(pub["num_citations"]))
+                if pub["num_citations"] >= search_config["Filter"]["Citations"]:
+                    typed_paper = ScholarLiterature(pub["bib"]["title"])
+                    typed_paper.set_summary(pub["bib"]["abstract"])
+                    typed_paper.set_citations(pub["num_citations"])
+                    typed_paper.set_download_link(pub["pub_url"])
+                    self.foundLiteratures.append(typed_paper)
+        except Exception:
+            print("Max Tries")
 
         return self.foundLiteratures
 
     def get_amount_found(self) -> int:
         return len(self.foundLiteratures)
 
-    def create_search_summary(self, path: str, search_name: str) -> str:
-        doc = dominate.document(title="Literature Research " + search_name)
-
-        with doc.head:
-            link(rel="stylesheet", href="../utils/style.css")
-
-        with doc.add(body()).add(div(id="content")):
-            a(id=search_name)
-            helper = DominateHelper(doc)
-
-            backgroundColorTc = "#c6f2b3"
-            headerList = [
-                HtmlTableElement(text="Index", bgColor=backgroundColorTc),
-                HtmlTableElement(text="Title", bgColor=backgroundColorTc),
-                HtmlTableElement(text="Summary", bgColor=backgroundColorTc),
-                HtmlTableElement(text="Download", bgColor=backgroundColorTc),
-            ]
-            entryList = []
-            indexCount = 0
-            for literature in self.foundLiteratures:
-                entryList.append(HtmlTableElement(text=str(indexCount)))
-                entryList.append(HtmlTableElement(text=literature.get_title()))
-                entryList.append(HtmlTableElement(text=literature.get_summary()))
-                if literature.get_download_link() is not "":
-                    entryList.append(
-                        HtmlTableElement(
-                            text="Download", href=literature.get_download_link()
-                        )
-                    )
-                else:
-                    entryList.append(HtmlTableElement(text="Download"))
-                indexCount = indexCount + 1
-            helper.createHtmlTable(headerList, entryList)
-
-        final_path = path + "_" + search_name + ".html"
-        file = open(final_path, "w+")
-        file.write(doc.__str__())
-        file.close()
-        self.path_to_summary = final_path
-
     def __prepareSearch(self, listOfWords):
-        changedList = ['"' + s + '"' for s in listOfWords]
-        keyword_list = " ".join(changedList)
-        keyword_list = keyword_list.replace('"AND"', "+")
-        keyword_list = keyword_list.replace('"NOT"', "-")
-        return keyword_list
+        groupedWords = []
+        # Add " ond word groups
+        for word in listOfWords:
+            if " " in word:
+                groupedWords.append('"' + word + '"')
+            else:
+                if "AND" in word:
+                    groupedWords.append(" AND ")
+                elif "NOT" in word:
+                    groupedWords.append(" -")
+                elif "OR" in word:
+                    groupedWords.append(" OR ")
+                else:
+                    groupedWords.append(word)
+        collocated = "".join(groupedWords)
+
+        return collocated

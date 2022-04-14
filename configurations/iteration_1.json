@@ -1,0 +1,218 @@
+{
+    "Title": "Literature Research, Iteration 1.0",
+    "SearchName": "Start",
+    "ResultPath": "Analysis",
+    "Searcher": [
+        "WOS",
+        "Scholar",
+        "Arxiv"
+    ],
+    "Search": [
+        {
+            "Name": "Iteration_1_Search_1",
+            "Description": "General Search",
+            "Keywords": [
+                "Instance Segmentation",
+                "AND",
+                "Weed",
+                "AND",
+                "Precision Agriculture",
+                "OR",
+                "Smart Farming",
+                "AND",
+                "Machine Vision",
+                "NOT",
+                "UAV",
+                "NOT",
+                "Aerial"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_2",
+            "Description": "Specific Weed Control",
+            "Keywords": [
+                "Weed control",
+                "AND",
+                "Machine Vision",
+                "OR",
+                "Computer Vision",
+                "AND",
+                "Precision Agriculture",
+                "NOT",
+                "UAV",
+                "NOT",
+                "Aerial"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_3",
+            "Description": "Plant Analysis in Image",
+            "Keywords": [
+                "Plant image analysis",
+                "AND",
+                "Precision Agriculture",
+                "OR",
+                "Smart Farming",
+                "AND",
+                "Weed",
+                "NOT",
+                "UAV",
+                "NOT",
+                "Aerial"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_4",
+            "Description": "Plant Reconstrution",
+            "Keywords": [
+                "Plant Reconstruction",
+                "AND",
+                "Weed",
+                "AND",
+                "Precision Agriculture",
+                "OR",
+                "Smart Farming",
+                "NOT",
+                "UAV",
+                "NOT",
+                "Aerial"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 1
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_5",
+            "Description": "Pasture and weed Search",
+            "Keywords": [
+                "Pastures",
+                "AND",
+                "Weed",
+                "AND",
+                "Computer Vision",
+                "NOT",
+                "Aerial"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_6",
+            "Description": "Semantic Segmentation on weed or general",
+            "Keywords": [
+                "Semantic Segmentation",
+                "OR",
+                "Instance Segmentation",
+                "OR",
+                "Leaf Segmentation",
+                "AND",
+                "Weed",
+                "NOT",
+                "Aerial",
+                "NOT",
+                "UAV"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_7",
+            "Description": "Semantic Segmentation on weed or general",
+            "Keywords": [
+                "Instance Segmentation",
+                "AND",
+                "Weed",
+                "OR",
+                "Plant",
+                "NOT",
+                "Tree",
+                "NOT",
+                "Aerial",
+                "NOT",
+                "UAV"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_8",
+            "Description": "General Pasture Exploration",
+            "Keywords": [
+                "pastures",
+                "AND",
+                "precision agriculture",
+                "OR",
+                "Smart Farming ",
+                "AND",
+                "computer vision",
+                "NOT",
+                "Aerial",
+                "NOT",
+                "UAV"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_9",
+            "Description": "General Pasture Exploration",
+            "Keywords": [
+                "pastures",
+                "AND",
+                "computer vision",
+                "AND",
+                "Weed ",
+                "NOT",
+                "Aerial",
+                "NOT",
+                "UAV"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        },
+        {
+            "Name": "Iteration_1_Search_10",
+            "Description": "General Pasture Exploration",
+            "Keywords": [
+                "pastures",
+                "AND",
+                "Weed",
+                "AND",
+                "Semantic Segmentation",
+                "OR",
+                "Instance Segmentation",
+                "NOT",
+                "Aerial",
+                "NOT",
+                "UAV"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        }
+    ]
+}

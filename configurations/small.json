@@ -1,0 +1,37 @@
+{
+    "Title": "Literature Research, Iteration 1.0",
+    "SearchName": "Start",
+    "ResultPath": "Analysis",
+    "Searcher": [
+        "Arxiv",
+        "WOS",
+        "Scholar"
+    ],
+    "Search": [
+        {
+            "Name": "Iteration_1_Search_1",
+            "Description": "General Search",
+            "Keywords": [
+                "Instance Segmentation",
+                "AND",
+                "Weed",
+                "AND",
+                "Precision Agriculture",
+                "OR",
+                "Smart Farming",
+                "AND",
+                "Machine Vision",
+                "NOT",
+                "UAV",
+                "NOT",
+                "Aerial",
+                "NOT",
+                "IoT"
+            ],
+            "Filter": {
+                "Year": 2019,
+                "Citations": 3
+            }
+        }
+    ]
+}
