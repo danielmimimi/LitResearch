@@ -1,0 +1,51 @@
+{
+    "Title": "Road to Phd",
+    "Search": [
+        {
+            "Name": "First",
+            "Description": "To do that",
+            "Keywords": [
+                "Weed Detection",
+                "OR",
+                "Weed",
+                "AND",
+                "Computer Vision",
+                "AND",
+                "Precision Farming",
+                "OR",
+                "Smart Farming"
+            ],
+            "Filter": {
+                "Year": 2020,
+                "Citations": 10
+            },
+            "Searcher": [
+                "Arxiv"
+            ]
+        },
+        {
+            "Name": "Second",
+            "Description": "And that",
+            "Keywords": [
+                "Weed Detection",
+                "OR",
+                "Weed",
+                "AND",
+                "Computer Vision",
+                "AND",
+                "Precision Farming",
+                "OR",
+                "Smart Farming",
+                "NOT",
+                "UAV"
+            ],
+            "Filter": {
+                "Year": 2020,
+                "Citations": 10
+            },
+            "Searcher": [
+                "Arxiv"
+            ]
+        }
+    ]
+}
